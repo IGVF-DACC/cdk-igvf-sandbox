@@ -37,4 +37,4 @@ USER aft
 
 ENTRYPOINT ["./entrypoint.sh"]
 
-CMD ["run.sh"]
+CMD ["./run.sh"]
