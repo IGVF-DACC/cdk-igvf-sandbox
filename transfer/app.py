@@ -138,7 +138,6 @@ class AnvilFileTransferStack(Stack):
             container=container,
         )
 
-
         rule = Rule(
             self,
             'AnvilFileTransferSchedule',
