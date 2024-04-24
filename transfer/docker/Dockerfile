@@ -25,13 +25,13 @@ RUN chown -R aft:aft $VIRTUAL_ENV
 
 WORKDIR /aft
 
-COPY --chown=aft:aft . .
-
-RUN chmod +x *.sh
-
 RUN git clone -b ${VERSION} --depth 1 https://github.com/IGVF-DACC/anvil-file-transfer .
 
 RUN pip install -r requirements.txt
+
+COPY --chown=aft:aft . .
+
+RUN chmod +x *.sh
 
 USER aft
 
