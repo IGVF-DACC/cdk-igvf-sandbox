@@ -1,4 +1,4 @@
-name: cdk-igvf-dev
+name: cdk-igvf-sandbox
 
 on: [push]
 
