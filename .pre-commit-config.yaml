@@ -10,8 +10,8 @@ repos:
       - id: double-quote-string-fixer
       - id: trailing-whitespace
       - id: end-of-file-fixer
-        exclude: ^(notification|network)/tests/snapshots
+        exclude: ^(notification|network|transfer)/tests/snapshots
       - id: pretty-format-json
         args: ['--autofix', '--no-sort-keys', '--indent=4', '--no-ensure-ascii']
-        exclude: ^(notification|network)/tests/snapshots
+        exclude: ^(notification|network|transfer)/tests/snapshots
       - id: check-yaml
