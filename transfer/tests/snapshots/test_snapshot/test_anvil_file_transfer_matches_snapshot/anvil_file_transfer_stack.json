@@ -1,0 +1,520 @@
+{
+    "Parameters": {
+        "BootstrapVersion": {
+            "Default": "/cdk-bootstrap/hnb659fds/version",
+            "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]",
+            "Type": "AWS::SSM::Parameter::Value<String>"
+        },
+        "SlackWebhookUrlParameter": {
+            "Default": "SLACK_WEBHOOK_URL_FOR_AWS_IGVF_STAGING_CHANNEL",
+            "Type": "AWS::SSM::Parameter::Value<String>"
+        }
+    },
+    "Resources": {
+        "AnvilFileTransferContainerExecutionRoleDefaultPolicyF4D965DB": {
+            "Properties": {
+                "PolicyDocument": {
+                    "Statement": [
+                        {
+                            "Action": [
+                                "logs:CreateLogStream",
+                                "logs:PutLogEvents"
+                            ],
+                            "Effect": "Allow",
+                            "Resource": {
+                                "Fn::GetAtt": [
+                                    "AnvilFileTransferContainerLogGroup0230765C",
+                                    "Arn"
+                                ]
+                            }
+                        },
+                        {
+                            "Action": [
+                                "ecr:BatchCheckLayerAvailability",
+                                "ecr:GetDownloadUrlForLayer",
+                                "ecr:BatchGetImage"
+                            ],
+                            "Effect": "Allow",
+                            "Resource": {
+                                "Fn::Join": [
+                                    "",
+                                    [
+                                        "arn:",
+                                        {
+                                            "Ref": "AWS::Partition"
+                                        },
+                                        ":ecr:testing:testing:repository/cdk-hnb659fds-container-assets-testing-testing"
+                                    ]
+                                ]
+                            }
+                        },
+                        {
+                            "Action": "ecr:GetAuthorizationToken",
+                            "Effect": "Allow",
+                            "Resource": "*"
+                        },
+                        {
+                            "Action": [
+                                "secretsmanager:GetSecretValue",
+                                "secretsmanager:DescribeSecret"
+                            ],
+                            "Effect": "Allow",
+                            "Resource": "arn:aws:secretsmanager:us-west-2:920073238245:secret:anvil-file-transfer-secrets-sandbox-t555J4"
+                        }
+                    ],
+                    "Version": "2012-10-17"
+                },
+                "PolicyName": "AnvilFileTransferContainerExecutionRoleDefaultPolicyF4D965DB",
+                "Roles": [
+                    {
+                        "Ref": "AnvilFileTransferContainerExecutionRoleE68F1046"
+                    }
+                ]
+            },
+            "Type": "AWS::IAM::Policy"
+        },
+        "AnvilFileTransferContainerExecutionRoleE68F1046": {
+            "Properties": {
+                "AssumeRolePolicyDocument": {
+                    "Statement": [
+                        {
+                            "Action": "sts:AssumeRole",
+                            "Effect": "Allow",
+                            "Principal": {
+                                "Service": "ecs-tasks.amazonaws.com"
+                            }
+                        }
+                    ],
+                    "Version": "2012-10-17"
+                }
+            },
+            "Type": "AWS::IAM::Role"
+        },
+        "AnvilFileTransferContainerLogGroup0230765C": {
+            "DeletionPolicy": "Retain",
+            "Properties": {
+                "RetentionInDays": 30
+            },
+            "Type": "AWS::Logs::LogGroup",
+            "UpdateReplacePolicy": "Retain"
+        },
+        "AnvilFileTransferJobDef7D5BC9B0": {
+            "Properties": {
+                "ContainerProperties": {
+                    "Environment": [],
+                    "ExecutionRoleArn": {
+                        "Fn::GetAtt": [
+                            "AnvilFileTransferContainerExecutionRoleE68F1046",
+                            "Arn"
+                        ]
+                    },
+                    "FargatePlatformConfiguration": {},
+                    "Image": {
+                        "Fn::Sub": "testing.dkr.ecr.testing.${AWS::URLSuffix}/cdk-hnb659fds-container-assets-testing-testing:f085470ce9371e7771deb63617ae33674e3da1bdba5ace353e8c0fcfa144ee99"
+                    },
+                    "LogConfiguration": {
+                        "LogDriver": "awslogs",
+                        "Options": {
+                            "awslogs-group": {
+                                "Ref": "AnvilFileTransferContainerLogGroup0230765C"
+                            },
+                            "awslogs-region": "testing",
+                            "awslogs-stream-prefix": "anvil-file-transfer",
+                            "mode": "non-blocking"
+                        }
+                    },
+                    "NetworkConfiguration": {
+                        "AssignPublicIp": "ENABLED"
+                    },
+                    "ReadonlyRootFilesystem": false,
+                    "ResourceRequirements": [
+                        {
+                            "Type": "MEMORY",
+                            "Value": "2048"
+                        },
+                        {
+                            "Type": "VCPU",
+                            "Value": "1"
+                        }
+                    ],
+                    "Secrets": [
+                        {
+                            "Name": "SA_SECRET",
+                            "ValueFrom": "arn:aws:secretsmanager:us-west-2:920073238245:secret:anvil-file-transfer-secrets-sandbox-t555J4:google_sa_base64::"
+                        },
+                        {
+                            "Name": "PORTAL_KEY",
+                            "ValueFrom": "arn:aws:secretsmanager:us-west-2:920073238245:secret:anvil-file-transfer-secrets-sandbox-t555J4:portal_key::"
+                        },
+                        {
+                            "Name": "PORTAL_SECRET_KEY",
+                            "ValueFrom": "arn:aws:secretsmanager:us-west-2:920073238245:secret:anvil-file-transfer-secrets-sandbox-t555J4:portal_secret_key::"
+                        }
+                    ]
+                },
+                "PlatformCapabilities": [
+                    "FARGATE"
+                ],
+                "RetryStrategy": {},
+                "Timeout": {},
+                "Type": "container"
+            },
+            "Type": "AWS::Batch::JobDefinition"
+        },
+        "AnvilFileTransferJobDefEventsRoleB2E6DB68": {
+            "Properties": {
+                "AssumeRolePolicyDocument": {
+                    "Statement": [
+                        {
+                            "Action": "sts:AssumeRole",
+                            "Effect": "Allow",
+                            "Principal": {
+                                "Service": "events.amazonaws.com"
+                            }
+                        }
+                    ],
+                    "Version": "2012-10-17"
+                }
+            },
+            "Type": "AWS::IAM::Role"
+        },
+        "AnvilFileTransferJobDefEventsRoleDefaultPolicyB0043D50": {
+            "Properties": {
+                "PolicyDocument": {
+                    "Statement": [
+                        {
+                            "Action": "batch:SubmitJob",
+                            "Effect": "Allow",
+                            "Resource": [
+                                {
+                                    "Ref": "AnvilFileTransferJobDef7D5BC9B0"
+                                },
+                                {
+                                    "Fn::GetAtt": [
+                                        "JobQueueEE3AD499",
+                                        "JobQueueArn"
+                                    ]
+                                }
+                            ]
+                        }
+                    ],
+                    "Version": "2012-10-17"
+                },
+                "PolicyName": "AnvilFileTransferJobDefEventsRoleDefaultPolicyB0043D50",
+                "Roles": [
+                    {
+                        "Ref": "AnvilFileTransferJobDefEventsRoleB2E6DB68"
+                    }
+                ]
+            },
+            "Type": "AWS::IAM::Policy"
+        },
+        "AnvilFileTransferJobRole18B68A25": {
+            "Properties": {
+                "AssumeRolePolicyDocument": {
+                    "Statement": [
+                        {
+                            "Action": "sts:AssumeRole",
+                            "Effect": "Allow",
+                            "Principal": {
+                                "Service": "ecs-tasks.amazonaws.com"
+                            }
+                        }
+                    ],
+                    "Version": "2012-10-17"
+                }
+            },
+            "Type": "AWS::IAM::Role"
+        },
+        "AnvilFileTransferScheduleB15AA650": {
+            "Properties": {
+                "ScheduleExpression": "cron(0 9 * * ? *)",
+                "State": "ENABLED",
+                "Targets": [
+                    {
+                        "Arn": {
+                            "Fn::GetAtt": [
+                                "JobQueueEE3AD499",
+                                "JobQueueArn"
+                            ]
+                        },
+                        "BatchParameters": {
+                            "JobDefinition": {
+                                "Ref": "AnvilFileTransferJobDef7D5BC9B0"
+                            },
+                            "JobName": "AnvilFileTransferBatchJob"
+                        },
+                        "Id": "Target0",
+                        "RetryPolicy": {
+                            "MaximumRetryAttempts": 0
+                        },
+                        "RoleArn": {
+                            "Fn::GetAtt": [
+                                "AnvilFileTransferJobDefEventsRoleB2E6DB68",
+                                "Arn"
+                            ]
+                        }
+                    }
+                ]
+            },
+            "Type": "AWS::Events::Rule"
+        },
+        "AnvilFileTransferSlackNotificationApiDestination7BCCF53C": {
+            "Properties": {
+                "ConnectionArn": "arn:aws:events:us-west-2:920073238245:connection/AwsIgvfStagingSlackWebhookConnectionA9DB5B71-w2HHlMDVlHoo/a3cc9e4f-5c65-421d-b204-d7c83b6d4c12",
+                "HttpMethod": "POST",
+                "InvocationEndpoint": {
+                    "Ref": "SlackWebhookUrlParameter"
+                }
+            },
+            "Type": "AWS::Events::ApiDestination"
+        },
+        "AnvilFileTransferSlackNotificationEventsRole3FCB2FE2": {
+            "Properties": {
+                "AssumeRolePolicyDocument": {
+                    "Statement": [
+                        {
+                            "Action": "sts:AssumeRole",
+                            "Effect": "Allow",
+                            "Principal": {
+                                "Service": "events.amazonaws.com"
+                            }
+                        }
+                    ],
+                    "Version": "2012-10-17"
+                }
+            },
+            "Type": "AWS::IAM::Role"
+        },
+        "AnvilFileTransferSlackNotificationEventsRoleDefaultPolicy98E28922": {
+            "Properties": {
+                "PolicyDocument": {
+                    "Statement": [
+                        {
+                            "Action": "events:InvokeApiDestination",
+                            "Effect": "Allow",
+                            "Resource": {
+                                "Fn::GetAtt": [
+                                    "AnvilFileTransferSlackNotificationApiDestination7BCCF53C",
+                                    "Arn"
+                                ]
+                            }
+                        }
+                    ],
+                    "Version": "2012-10-17"
+                },
+                "PolicyName": "AnvilFileTransferSlackNotificationEventsRoleDefaultPolicy98E28922",
+                "Roles": [
+                    {
+                        "Ref": "AnvilFileTransferSlackNotificationEventsRole3FCB2FE2"
+                    }
+                ]
+            },
+            "Type": "AWS::IAM::Policy"
+        },
+        "ComputeEnvironmentC570994D": {
+            "Properties": {
+                "ComputeEnvironmentName": "AnvilFileTransferCompute",
+                "ComputeResources": {
+                    "MaxvCpus": 2,
+                    "SecurityGroupIds": [
+                        {
+                            "Fn::GetAtt": [
+                                "ComputeEnvironmentSecurityGroupA8641310",
+                                "GroupId"
+                            ]
+                        }
+                    ],
+                    "Subnets": [
+                        "s-12345",
+                        "s-67890"
+                    ],
+                    "Type": "FARGATE"
+                },
+                "ReplaceComputeEnvironment": false,
+                "State": "ENABLED",
+                "Type": "managed",
+                "UpdatePolicy": {}
+            },
+            "Type": "AWS::Batch::ComputeEnvironment"
+        },
+        "ComputeEnvironmentSecurityGroupA8641310": {
+            "Properties": {
+                "GroupDescription": "AnvilFileTransferStack/ComputeEnvironment/SecurityGroup",
+                "SecurityGroupEgress": [
+                    {
+                        "CidrIp": "0.0.0.0/0",
+                        "Description": "Allow all outbound traffic by default",
+                        "IpProtocol": "-1"
+                    }
+                ],
+                "VpcId": "vpc-12345"
+            },
+            "Type": "AWS::EC2::SecurityGroup"
+        },
+        "JobQueueEE3AD499": {
+            "Properties": {
+                "ComputeEnvironmentOrder": [
+                    {
+                        "ComputeEnvironment": {
+                            "Fn::GetAtt": [
+                                "ComputeEnvironmentC570994D",
+                                "ComputeEnvironmentArn"
+                            ]
+                        },
+                        "Order": 1
+                    }
+                ],
+                "JobQueueName": "AnvilFileTransferJobQueue",
+                "Priority": 1,
+                "State": "ENABLED"
+            },
+            "Type": "AWS::Batch::JobQueue"
+        },
+        "NotifySlackAnvilFileTransferFailedE33F6E9E": {
+            "Properties": {
+                "EventPattern": {
+                    "detail": {
+                        "jobQueue": [
+                            {
+                                "Fn::GetAtt": [
+                                    "JobQueueEE3AD499",
+                                    "JobQueueArn"
+                                ]
+                            }
+                        ],
+                        "status": [
+                            "FAILED"
+                        ]
+                    },
+                    "detail-type": [
+                        "Batch Job State Change"
+                    ],
+                    "source": [
+                        "aws.batch"
+                    ]
+                },
+                "State": "ENABLED",
+                "Targets": [
+                    {
+                        "Arn": {
+                            "Fn::GetAtt": [
+                                "AnvilFileTransferSlackNotificationApiDestination7BCCF53C",
+                                "Arn"
+                            ]
+                        },
+                        "Id": "Target0",
+                        "Input": {
+                            "Fn::Join": [
+                                "",
+                                [
+                                    "{\"text\":\":x: *AnvilFileTransferFailed* | ",
+                                    {
+                                        "Fn::GetAtt": [
+                                            "JobQueueEE3AD499",
+                                            "JobQueueArn"
+                                        ]
+                                    },
+                                    "\"}"
+                                ]
+                            ]
+                        },
+                        "RoleArn": {
+                            "Fn::GetAtt": [
+                                "AnvilFileTransferSlackNotificationEventsRole3FCB2FE2",
+                                "Arn"
+                            ]
+                        }
+                    }
+                ]
+            },
+            "Type": "AWS::Events::Rule"
+        },
+        "NotifySlackAnvilFileTransferSucceeded3EBC86EF": {
+            "Properties": {
+                "EventPattern": {
+                    "detail": {
+                        "jobQueue": [
+                            {
+                                "Fn::GetAtt": [
+                                    "JobQueueEE3AD499",
+                                    "JobQueueArn"
+                                ]
+                            }
+                        ],
+                        "status": [
+                            "SUCCEEDED"
+                        ]
+                    },
+                    "detail-type": [
+                        "Batch Job State Change"
+                    ],
+                    "source": [
+                        "aws.batch"
+                    ]
+                },
+                "State": "ENABLED",
+                "Targets": [
+                    {
+                        "Arn": {
+                            "Fn::GetAtt": [
+                                "AnvilFileTransferSlackNotificationApiDestination7BCCF53C",
+                                "Arn"
+                            ]
+                        },
+                        "Id": "Target0",
+                        "Input": {
+                            "Fn::Join": [
+                                "",
+                                [
+                                    "{\"text\":\":white_check_mark: *AnvilFileTransferSucceeded* | ",
+                                    {
+                                        "Fn::GetAtt": [
+                                            "JobQueueEE3AD499",
+                                            "JobQueueArn"
+                                        ]
+                                    },
+                                    "\"}"
+                                ]
+                            ]
+                        },
+                        "RoleArn": {
+                            "Fn::GetAtt": [
+                                "AnvilFileTransferSlackNotificationEventsRole3FCB2FE2",
+                                "Arn"
+                            ]
+                        }
+                    }
+                ]
+            },
+            "Type": "AWS::Events::Rule"
+        }
+    },
+    "Rules": {
+        "CheckBootstrapVersion": {
+            "Assertions": [
+                {
+                    "Assert": {
+                        "Fn::Not": [
+                            {
+                                "Fn::Contains": [
+                                    [
+                                        "1",
+                                        "2",
+                                        "3",
+                                        "4",
+                                        "5"
+                                    ],
+                                    {
+                                        "Ref": "BootstrapVersion"
+                                    }
+                                ]
+                            }
+                        ]
+                    },
+                    "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+                }
+            ]
+        }
+    }
+}
