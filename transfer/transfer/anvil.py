@@ -41,7 +41,6 @@ from aws_cdk.aws_ec2 import Vpc
 from constructs import Construct
 
 
-
 class AnvilFileTransferStack(Stack):
 
     def __init__(self, scope: Construct, construct_id: str, **kwargs) -> None:
