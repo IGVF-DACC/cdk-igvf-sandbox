@@ -1,0 +1,316 @@
+{
+    "Parameters": {
+        "BootstrapVersion": {
+            "Default": "/cdk-bootstrap/hnb659fds/version",
+            "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]",
+            "Type": "AWS::SSM::Parameter::Value<String>"
+        }
+    },
+    "Resources": {
+        "Abc": {
+            "Properties": {
+                "CustomResponseBodies": {
+                    "RateLimitBody": {
+                        "Content": "{\"error\": \"Too many requests\", \"message\": \"You have exceeded request limit. Try again later.\"}",
+                        "ContentType": "APPLICATION_JSON"
+                    }
+                },
+                "DefaultAction": {
+                    "Allow": {}
+                },
+                "Rules": [
+                    {
+                        "Action": {
+                            "Allow": {}
+                        },
+                        "Name": "allow-ips",
+                        "Priority": 40,
+                        "Statement": {
+                            "IPSetReferenceStatement": {
+                                "Arn": {
+                                    "Fn::GetAtt": [
+                                        "abcallowedips",
+                                        "Arn"
+                                    ]
+                                }
+                            }
+                        },
+                        "VisibilityConfig": {
+                            "CloudWatchMetricsEnabled": true,
+                            "MetricName": "abc-allowed-ips",
+                            "SampledRequestsEnabled": true
+                        }
+                    },
+                    {
+                        "Action": {
+                            "Block": {}
+                        },
+                        "Name": "block-ips",
+                        "Priority": 50,
+                        "Statement": {
+                            "IPSetReferenceStatement": {
+                                "Arn": {
+                                    "Fn::GetAtt": [
+                                        "abcblockedips",
+                                        "Arn"
+                                    ]
+                                }
+                            }
+                        },
+                        "VisibilityConfig": {
+                            "CloudWatchMetricsEnabled": true,
+                            "MetricName": "abc-blocked-ips",
+                            "SampledRequestsEnabled": true
+                        }
+                    },
+                    {
+                        "Action": {
+                            "Block": {
+                                "CustomResponse": {
+                                    "CustomResponseBodyKey": "RateLimitBody",
+                                    "ResponseCode": 429
+                                }
+                            }
+                        },
+                        "Name": "throttle-requests",
+                        "Priority": 100,
+                        "Statement": {
+                            "RateBasedStatement": {
+                                "AggregateKeyType": "IP",
+                                "EvaluationWindowSec": 300,
+                                "Limit": 600
+                            }
+                        },
+                        "VisibilityConfig": {
+                            "CloudWatchMetricsEnabled": true,
+                            "MetricName": "abc-waf-throttle-requests",
+                            "SampledRequestsEnabled": true
+                        }
+                    },
+                    {
+                        "Name": "AWS-AWSManagedRulesAmazonIpReputationList",
+                        "OverrideAction": {
+                            "None": {}
+                        },
+                        "Priority": 200,
+                        "Statement": {
+                            "ManagedRuleGroupStatement": {
+                                "Name": "AWSManagedRulesAmazonIpReputationList",
+                                "VendorName": "AWS"
+                            }
+                        },
+                        "VisibilityConfig": {
+                            "CloudWatchMetricsEnabled": true,
+                            "MetricName": "abc-AWS-AWSManagedRulesAmazonIpReputationList",
+                            "SampledRequestsEnabled": true
+                        }
+                    },
+                    {
+                        "Name": "AWS-AWSManagedRulesAnonymousIpList",
+                        "OverrideAction": {
+                            "None": {}
+                        },
+                        "Priority": 300,
+                        "Statement": {
+                            "ManagedRuleGroupStatement": {
+                                "Name": "AWSManagedRulesAnonymousIpList",
+                                "VendorName": "AWS"
+                            }
+                        },
+                        "VisibilityConfig": {
+                            "CloudWatchMetricsEnabled": true,
+                            "MetricName": "abc-AWS-AWSManagedRulesAnonymousIpList",
+                            "SampledRequestsEnabled": true
+                        }
+                    },
+                    {
+                        "Name": "AWS-AWSManagedRulesLinuxRuleSet",
+                        "OverrideAction": {
+                            "None": {}
+                        },
+                        "Priority": 400,
+                        "Statement": {
+                            "ManagedRuleGroupStatement": {
+                                "Name": "AWSManagedRulesLinuxRuleSet",
+                                "VendorName": "AWS"
+                            }
+                        },
+                        "VisibilityConfig": {
+                            "CloudWatchMetricsEnabled": true,
+                            "MetricName": "abc-AWS-AWSManagedRulesLinuxRuleSet",
+                            "SampledRequestsEnabled": true
+                        }
+                    },
+                    {
+                        "Name": "AWS-AWSManagedRulesPHPRuleSet",
+                        "OverrideAction": {
+                            "None": {}
+                        },
+                        "Priority": 500,
+                        "Statement": {
+                            "ManagedRuleGroupStatement": {
+                                "Name": "AWSManagedRulesPHPRuleSet",
+                                "VendorName": "AWS"
+                            }
+                        },
+                        "VisibilityConfig": {
+                            "CloudWatchMetricsEnabled": true,
+                            "MetricName": "abc-AWS-AWSManagedRulesPHPRuleSet",
+                            "SampledRequestsEnabled": true
+                        }
+                    },
+                    {
+                        "Name": "AWS-AWSManagedRulesUnixRuleSet",
+                        "OverrideAction": {
+                            "None": {}
+                        },
+                        "Priority": 600,
+                        "Statement": {
+                            "ManagedRuleGroupStatement": {
+                                "Name": "AWSManagedRulesUnixRuleSet",
+                                "VendorName": "AWS"
+                            }
+                        },
+                        "VisibilityConfig": {
+                            "CloudWatchMetricsEnabled": true,
+                            "MetricName": "abc-AWS-AWSManagedRulesUnixRuleSet",
+                            "SampledRequestsEnabled": true
+                        }
+                    },
+                    {
+                        "Name": "AWS-AWSManagedRulesCommonRuleSet",
+                        "OverrideAction": {
+                            "None": {}
+                        },
+                        "Priority": 700,
+                        "Statement": {
+                            "ManagedRuleGroupStatement": {
+                                "Name": "AWSManagedRulesCommonRuleSet",
+                                "RuleActionOverrides": [
+                                    {
+                                        "ActionToUse": {
+                                            "Count": {}
+                                        },
+                                        "Name": "SizeRestrictions_BODY"
+                                    },
+                                    {
+                                        "ActionToUse": {
+                                            "Count": {}
+                                        },
+                                        "Name": "SizeRestrictions_URIPATH"
+                                    }
+                                ],
+                                "VendorName": "AWS"
+                            }
+                        },
+                        "VisibilityConfig": {
+                            "CloudWatchMetricsEnabled": true,
+                            "MetricName": "abc-AWS-AWSManagedRulesCommonRuleSet",
+                            "SampledRequestsEnabled": true
+                        }
+                    },
+                    {
+                        "Name": "AWS-AWSManagedRulesKnownBadInputsRuleSet",
+                        "OverrideAction": {
+                            "None": {}
+                        },
+                        "Priority": 800,
+                        "Statement": {
+                            "ManagedRuleGroupStatement": {
+                                "Name": "AWSManagedRulesKnownBadInputsRuleSet",
+                                "VendorName": "AWS"
+                            }
+                        },
+                        "VisibilityConfig": {
+                            "CloudWatchMetricsEnabled": true,
+                            "MetricName": "abc-AWS-AWSManagedRulesKnownBadInputsRuleSet",
+                            "SampledRequestsEnabled": true
+                        }
+                    },
+                    {
+                        "Name": "AWS-AWSManagedRulesBotControlRuleSet",
+                        "OverrideAction": {
+                            "None": {}
+                        },
+                        "Priority": 900,
+                        "Statement": {
+                            "ManagedRuleGroupStatement": {
+                                "ManagedRuleGroupConfigs": [
+                                    {
+                                        "AWSManagedRulesBotControlRuleSet": {
+                                            "InspectionLevel": "COMMON"
+                                        }
+                                    }
+                                ],
+                                "Name": "AWSManagedRulesBotControlRuleSet",
+                                "VendorName": "AWS"
+                            }
+                        },
+                        "VisibilityConfig": {
+                            "CloudWatchMetricsEnabled": true,
+                            "MetricName": "abc-AWS-AWSManagedRulesBotControlRuleSet",
+                            "SampledRequestsEnabled": true
+                        }
+                    }
+                ],
+                "Scope": "REGIONAL",
+                "VisibilityConfig": {
+                    "CloudWatchMetricsEnabled": true,
+                    "MetricName": "abcMetrics",
+                    "SampledRequestsEnabled": true
+                }
+            },
+            "Type": "AWS::WAFv2::WebACL"
+        },
+        "abcallowedips": {
+            "Properties": {
+                "Addresses": [
+                    "98.35.33.121/32"
+                ],
+                "Description": "Allowed IPs",
+                "IPAddressVersion": "IPV4",
+                "Scope": "REGIONAL"
+            },
+            "Type": "AWS::WAFv2::IPSet"
+        },
+        "abcblockedips": {
+            "Properties": {
+                "Addresses": [
+                    "192.0.2.0/24",
+                    "184.1.0.0/16"
+                ],
+                "Description": "Blocked IPs",
+                "IPAddressVersion": "IPV4",
+                "Scope": "REGIONAL"
+            },
+            "Type": "AWS::WAFv2::IPSet"
+        }
+    },
+    "Rules": {
+        "CheckBootstrapVersion": {
+            "Assertions": [
+                {
+                    "Assert": {
+                        "Fn::Not": [
+                            {
+                                "Fn::Contains": [
+                                    [
+                                        "1",
+                                        "2",
+                                        "3",
+                                        "4",
+                                        "5"
+                                    ],
+                                    {
+                                        "Ref": "BootstrapVersion"
+                                    }
+                                ]
+                            }
+                        ]
+                    },
+                    "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+                }
+            ]
+        }
+    }
+}
