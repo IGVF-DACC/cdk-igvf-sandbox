@@ -18,7 +18,7 @@ ENVIRONMENT = Environment(
 
 app = App()
 
-demo_waf_igvf_ui = WAF(
+sandbox_waf_igvf_ui = WAF(
     app,
     IGVF_UI_SANDBOX_WAF_PREFIX,
     props=WAFProps(
