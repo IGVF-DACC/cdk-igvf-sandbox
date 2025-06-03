@@ -63,7 +63,7 @@ jobs:
       run: pytest
       working-directory: ./transfer
 
-test-waf:
+  test-waf:
     needs: lint
     runs-on: ubuntu-latest
     strategy:
