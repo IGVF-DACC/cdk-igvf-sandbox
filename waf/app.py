@@ -4,6 +4,7 @@ from aws_cdk import Environment
 from waf.config import config
 
 from waf.constants import IGVF_UI_SANDBOX_WAF_PREFIX
+from waf.constants import IGVF_API_SANDBOX_WAF_PREFIX
 
 from waf.acl import WAF
 from waf.acl import WAFProps
@@ -24,6 +25,23 @@ sandbox_waf_igvf_ui = WAF(
     props=WAFProps(
         rules=get_rules(IGVF_UI_SANDBOX_WAF_PREFIX),
         prefix=IGVF_UI_SANDBOX_WAF_PREFIX,
+        ips_to_allow=[
+            # e.g. '98.35.33.121/32',
+        ],
+        ips_to_block=[
+            # e.g. '192.0.2.0/24',
+        ]
+    ),
+    env=ENVIRONMENT,
+    termination_protection=True,
+)
+
+sandbox_waf_igvf_api = WAF(
+    app,
+    IGVF_API_SANDBOX_WAF_PREFIX,
+    props=WAFProps(
+        rules=get_rules(IGVF_API_SANDBOX_WAF_PREFIX),
+        prefix=IGVF_API_SANDBOX_WAF_PREFIX,
         ips_to_allow=[
             # e.g. '98.35.33.121/32',
         ],

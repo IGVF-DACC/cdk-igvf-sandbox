@@ -6,6 +6,8 @@ from aws_cdk import Environment
 
 from aws_cdk.assertions import Template
 
+from waf.constants import IGVF_UI_SANDBOX_WAF_PREFIX
+
 
 ENVIRONMENT = Environment(
     account='testing',
@@ -20,10 +22,10 @@ def test_waf_match_with_snapshot(snapshot):
     app = App()
     abc_waf = WAF(
         app,
-        'abc',
+        IGVF_UI_SANDBOX_WAF_PREFIX,
         props=WAFProps(
-            rules=get_rules('abc'),
-            prefix='abc',
+            rules=get_rules(IGVF_UI_SANDBOX_WAF_PREFIX),
+            prefix=IGVF_UI_SANDBOX_WAF_PREFIX,
             ips_to_allow=[
                 '98.35.33.121/32',
             ],
