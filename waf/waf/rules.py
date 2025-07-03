@@ -232,7 +232,15 @@ RULES = {
             "Statement": {
                 "ManagedRuleGroupStatement": {
                     "VendorName": "AWS",
-                    "Name": "AWSManagedRulesAnonymousIpList"
+                    "Name": "AWSManagedRulesAnonymousIpList",
+                    "RuleActionOverrides": [
+                        {
+                            "Name": "HostingProviderIPList",
+                            "ActionToUse": {
+                                "Count": {}
+                            }
+                        }
+                    ]
                 }
             },
             "OverrideAction": {
